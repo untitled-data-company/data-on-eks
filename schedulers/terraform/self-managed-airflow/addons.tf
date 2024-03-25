@@ -72,7 +72,7 @@ module "eks_blueprints_addons" {
   #---------------------------------------
   enable_external_secrets = true
   external_secrets_ssm_parameter_arns = [
-    "arn:aws:ssm:::parameter/airflow/*"
+    "arn:aws:ssm:::parameter/airflow-eks/*"
   ]
 
   #---------------------------------------
