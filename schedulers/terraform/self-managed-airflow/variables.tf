@@ -6,7 +6,7 @@ variable "name" {
 
 variable "region" {
   description = "Region"
-  default     = "us-west-2"
+  default     = "us-east-1"
   type        = string
 }
 
@@ -59,20 +59,14 @@ variable "eks_data_plane_subnet_secondary_cidr" {
   type        = list(string)
 }
 
-variable "enable_amazon_prometheus" {
-  description = "Enable AWS Managed Prometheus service"
-  type        = bool
-  default     = true
-}
-
 variable "enable_airflow" {
   description = "Enable Apache Airflow"
   type        = bool
   default     = true
 }
 
-variable "enable_airflow_spark_example" {
-  description = "Enable Apache Airflow and Spark Operator example"
+variable "enable_external_secrets" {
+  description = "Enable External Secrets operator add-on"
   type        = bool
-  default     = false
+  default     = true
 }
