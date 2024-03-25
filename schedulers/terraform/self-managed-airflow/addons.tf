@@ -183,7 +183,7 @@ module "eks_data_addons" {
   enable_airflow = true
   airflow_helm_config = {
     namespace = try(kubernetes_namespace_v1.airflow[0].metadata[0].name, local.airflow_namespace)
-    version   = "1.11.0"
+    version   = "1.13.0"
     values = [templatefile("${path.module}/helm-values/airflow-values.yaml", {
       # Airflow Postgres RDS Config
       airflow_db_user = local.airflow_name
