@@ -70,7 +70,7 @@ resource "random_password" "postgres" {
 #tfsec:ignore:aws-ssm-secret-use-customer-key
 resource "aws_secretsmanager_secret" "postgres" {
   count                   = var.enable_airflow ? 1 : 0
-  name                    = "postgres-2"
+  name                    = "postgres-1"
   recovery_window_in_days = 0 # Set to zero for this example to force delete during Terraform destroy
 }
 
