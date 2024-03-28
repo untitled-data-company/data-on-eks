@@ -72,6 +72,14 @@ workers:
   serviceAccount:
     create: false
     name: ${worker_service_account}
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "512Mi"
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+  safeToEvict: false
 
 ###################################
 # Airflow scheduler settings
@@ -93,11 +101,11 @@ scheduler:
 
   resources:
     limits:
-     cpu: 500m
-     memory: 1024Mi
+     cpu: 400m
+     memory: 1500Mi
     requests:
-     cpu: 500m
-     memory: 1024Mi
+     cpu: 250m
+     memory: 750Mi
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
@@ -131,11 +139,11 @@ webserver:
 
   resources:
     limits:
-      cpu: 1000m
+      cpu: 600m
       memory: 4Gi
     requests:
-      cpu: 1000m
-      memory: 4Gi
+      cpu: 150m
+      memory: 2Gi
 
   # Create initial user.
   defaultUser:

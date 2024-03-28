@@ -87,7 +87,7 @@ module "eks" {
       max_size     = 4
       desired_size = 1
 
-      instance_types = ["m7g.xlarge"]
+      instance_types = ["m7g.medium"]
       ami_type       = "AL2_ARM_64"
 
       ebs_optimized = true
