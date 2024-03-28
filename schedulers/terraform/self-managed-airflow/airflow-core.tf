@@ -86,7 +86,7 @@ resource "aws_secretsmanager_secret_version" "postgres" {
 module "security_group" {
   count   = var.enable_airflow ? 1 : 0
   source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 5.0"
+  version = "~> 5.1"
 
   name        = local.name
   description = "Complete PostgreSQL example security group"
@@ -149,7 +149,7 @@ resource "kubernetes_secret_v1" "airflow_scheduler" {
 
 module "airflow_irsa_scheduler" {
   source  = "aws-ia/eks-blueprints-addon/aws"
-  version = "~> 1.0" # ensure to update this to the latest/desired version
+  version = "~> 1.1" # ensure to update this to the latest/desired version
 
   count = var.enable_airflow ? 1 : 0
   # IAM role for service account (IRSA)
@@ -211,7 +211,7 @@ module "airflow_irsa_webserver" {
   count = var.enable_airflow ? 1 : 0
 
   source  = "aws-ia/eks-blueprints-addon/aws"
-  version = "~> 1.0" #ensure to update this to the latest/desired version
+  version = "~> 1.1" #ensure to update this to the latest/desired version
 
   # Disable helm release
   create_release = false
@@ -323,7 +323,7 @@ module "airflow_irsa_worker" {
   count = var.enable_airflow ? 1 : 0
 
   source  = "aws-ia/eks-blueprints-addon/aws"
-  version = "~> 1.0" #ensure to update this to the latest/desired version
+  version = "~> 1.1" #ensure to update this to the latest/desired version
 
   # Disable helm release
   create_release = false
@@ -443,7 +443,7 @@ resource "aws_security_group" "efs" {
 module "airflow_s3_bucket" {
   count   = var.enable_airflow ? 1 : 0
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "~> 3.0"
+  version = "~> 4.1"
 
   bucket_prefix = "${local.name}-logs-"
 

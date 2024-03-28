@@ -3,7 +3,7 @@
 #---------------------------------------------------------------
 module "ebs_csi_driver_irsa" {
   source                = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version               = "~> 5.34"
+  version               = "~> 5.37"
   role_name_prefix      = format("%s-%s-", local.name, "ebs-csi-driver")
   attach_ebs_csi_policy = true
   oidc_providers = {
@@ -68,14 +68,6 @@ module "eks_blueprints_addons" {
   }
 
   #---------------------------------------
-  # External Secrets
-  #---------------------------------------
-  enable_external_secrets = true
-  external_secrets_ssm_parameter_arns = [
-    "arn:aws:ssm:::parameter/airflow-eks/*"
-  ]
-
-  #---------------------------------------
   # Karpenter Autoscaler for EKS Cluster
   #---------------------------------------
   enable_karpenter                  = true
@@ -122,7 +114,7 @@ module "eks_blueprints_addons" {
 #---------------------------------------------------------------
 module "eks_data_addons" {
   source  = "aws-ia/eks-data-addons/aws"
-  version = "~> 1.2.9" # ensure to update this to the latest/desired version
+  version = "~> 1.31.1" # ensure to update this to the latest/desired version
 
   oidc_provider_arn = module.eks.oidc_provider_arn
 
@@ -150,81 +142,4 @@ module "eks_data_addons" {
     })]
   }
 
-}
-
-#---------------------------------------------------------------
-# Grafana Admin credentials resources
-#---------------------------------------------------------------
-data "aws_secretsmanager_secret_version" "admin_password_version" {
-  secret_id  = aws_secretsmanager_secret.grafana.id
-  depends_on = [aws_secretsmanager_secret_version.grafana]
-}
-
-resource "random_password" "grafana" {
-  length           = 16
-  special          = true
-  override_special = "@_"
-}
-
-#tfsec:ignore:aws-ssm-secret-use-customer-key
-resource "aws_secretsmanager_secret" "grafana" {
-  name                    = "${local.name}-grafana"
-  recovery_window_in_days = 0 # Set to zero for this example to force delete during Terraform destroy
-}
-
-resource "aws_secretsmanager_secret_version" "grafana" {
-  secret_id     = aws_secretsmanager_secret.grafana.id
-  secret_string = random_password.grafana.result
-}
-
-#---------------------------------------------------------------
-# IAM Policy for FluentBit Add-on
-#---------------------------------------------------------------
-resource "aws_iam_policy" "fluentbit" {
-  description = "IAM policy policy for FluentBit"
-  name        = "${local.name}-fluentbit-additional"
-  policy      = data.aws_iam_policy_document.fluent_bit.json
-}
-
-#---------------------------------------------------------------
-# S3 log bucket for FluentBit
-#---------------------------------------------------------------
-#tfsec:ignore:*
-module "fluentbit_s3_bucket" {
-  source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "~> 3.0"
-
-  bucket_prefix = "${local.name}-spark-logs-"
-  # For example only - please evaluate for your environment
-  force_destroy = true
-  server_side_encryption_configuration = {
-    rule = {
-      apply_server_side_encryption_by_default = {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-
-  tags = local.tags
-}
-
-#---------------------------------------------------------------
-# IAM policy for FluentBit
-#---------------------------------------------------------------
-data "aws_iam_policy_document" "fluent_bit" {
-  statement {
-    sid       = ""
-    effect    = "Allow"
-    resources = ["arn:${data.aws_partition.current.partition}:s3:::${module.fluentbit_s3_bucket.s3_bucket_id}/*"]
-
-    actions = [
-      "s3:ListBucket",
-      "s3:PutObject",
-      "s3:PutObjectAcl",
-      "s3:GetObject",
-      "s3:GetObjectAcl",
-      "s3:DeleteObject",
-      "s3:DeleteObjectVersion"
-    ]
-  }
 }
