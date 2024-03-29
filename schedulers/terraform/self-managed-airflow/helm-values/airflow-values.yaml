@@ -213,8 +213,6 @@ dags:
     enabled: true
 
     # git repo clone url
-    # repo: git@github.com:Hyper-Mesh/airflow-dags.git
-    #repo: git@github.com:jagpk/sample-airflow-dags.git
     repo: git@github.com:Eqtble/eqtble-airflow-dags.git
     branch: main
     rev: HEAD
